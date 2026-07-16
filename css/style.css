@@ -607,3 +607,19 @@ img.avatar-lg{object-fit:cover}
   .recent-cols{grid-template-columns:1fr}
   .hive-core-stats{justify-content:center}
 }
+
+/* ===== 顶部广告位（可投放广告代码，× 可关闭）===== */
+.top-ad{display:flex;align-items:center;gap:10px;padding:5px 14px;background:linear-gradient(90deg,var(--bg3),var(--bg2));border-bottom:1px solid var(--border);font-size:13px;color:var(--text2)}
+.top-ad-label{flex:none;background:var(--accent);color:#fff;padding:2px 8px;border-radius:999px;font-size:12px}
+.top-ad-text{flex:1;color:var(--text)}
+.top-ad-x{flex:none;background:transparent;border:none;color:var(--text3);font-size:18px;line-height:1;cursor:pointer}
+.top-ad-x:hover{color:var(--text)}
+
+/* ===== 赞助弹窗（仿 B 站充电）===== */
+.support-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:10px}
+.support-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.sc-title{font-weight:600;font-size:15px}
+.sc-hint{font-size:13px;color:var(--text2);flex:1}
+.wx-qr-wrap{display:flex;justify-content:center;align-items:center;min-height:120px;background:var(--bg);border-radius:8px;padding:8px}
+.wx-qr{max-width:140px;max-height:140px;border-radius:6px}
+@media(max-width:680px){.support-grid{grid-template-columns:1fr}}

@@ -67,3 +67,35 @@ python deploy.py
 ## 开源协议
 
 [MIT](./LICENSE) © 2026 redstarstorm
+
+## 版本号与缓存刷新（部署必看）
+
+站点用 `index.html` 里资源 URL 的 `?v=xxxx` 做缓存失效（cache busting），同时 `sw.js` 用 `const CACHE = 'wankan-accel-xxxx'` 命名自己的缓存空间。两者**必须同步刷新**，否则 Service Worker 会一直喂旧的 `index.html`，导致「改了代码但线上没变化」。
+
+项目提供**单一真源 + 自动刷新**的方法，杜绝上述事故：
+
+- `VERSION` 文件：版本号的唯一真源（格式 `YYYYMMDD` + 一个小写字母，如 `20260716a`）。
+- `bump_version.py`：推算下一版本，同步改写 `index.html` 的 `?v=` 与 `sw.js` 的 `CACHE` 常量，并写回 `VERSION`。
+  - 同一天再发版：字母顺延（`a→b→…→z→aa`）。
+  - 跨天：重置为当天日期 + `a`。
+- **部署脚本会自动 bump**：`deploy.py` 与 `_ftp_deploy2.py` 在上传前都会调用 `bump_version.bump()`，并把 `sw.js` 纳入上传清单，确保 SW 缓存版本跟着升、旧 `index.html` 被清掉。
+
+手动使用：
+
+```bash
+python bump_version.py     # 输出 旧 -> 新，并改写 index.html 与 sw.js
+```
+
+> 不要手工改 `?v=`。直接跑部署脚本即可，版本号会自己 +1 并自动刷新两端缓存。
+
+## 自愿赞助（仿 B 站充电）
+
+万刊网完全免费、不追踪用户。如果你觉得它有用，欢迎**自愿**支持：
+
+- **导航栏「💖 赞助」按钮**（登录/未登录都可见）→ 打开赞助弹窗，含三栏：
+  1. **微信赞赏**：扫微信收款码（运营者把收款码命名为 `assets/wechat-qr.png` 上传到站点根目录即可显示）。
+  2. **GitHub Sponsors**：链接到 `https://github.com/sponsors/Oseter`，可每月/一次性赞助，并点亮仓库的 ⭐ Sponsor。
+  3. **广告 / 商务合作**：本站接受广告与商务合作，广告位招租中。
+- **仓库 Sponsor 按钮**：`.github/FUNDING.yml` 已配置，仓库会显示 ⭐ Sponsor。
+- **顶部广告条**：`index.html` 的 `.top-ad` 是一处可投放广告代码的广告位（点击 × 可关闭，记忆在 `localStorage`），运营者把广告代码贴进去即可。
+

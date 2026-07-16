@@ -15,6 +15,7 @@ import ftplib
 import time
 import sys
 import os
+import bump_version
 
 HOST = os.environ.get("FTP_HOST", "ftpupload.net")
 USER = os.environ.get("FTP_USER", "")
@@ -65,6 +66,9 @@ def upload_one(f):
 
 
 def main():
+    # 发布前自动刷新版本号（index.html 的 ?v= 与 sw.js 的 CACHE 同步）
+    cur, nxt = bump_version.bump()
+    print(f"version: {cur} -> {nxt}")
     ok = 0
     for f in FILES:
         done = False

@@ -6,9 +6,14 @@
   <title>万刊网 — 独立刊物发布平台</title>
   <meta name="description" content="万刊网是一个独立的刊物发布平台，任何人都可以创建刊物，任何人都可以投稿，不依附于任何组织。">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
-  <link rel="stylesheet" href="css/style.css?v=20260714m">
+  <link rel="stylesheet" href="css/style.css?v=20260716a">
 </head>
 <body>
+  <div class="top-ad" id="top-ad">
+    <span class="top-ad-label">广告位</span>
+    <span class="top-ad-text">广告位招租中 · 商务合作请联系站长（见「赞助」）</span>
+    <button class="top-ad-x" onclick="dismissAd()" aria-label="关闭">×</button>
+  </div>
   <div id="navbar"></div>
   <div id="app"></div>
   <footer class="footer">
@@ -21,13 +26,13 @@
     <p>万刊网 — 独立刊物发布平台 | PHP + SQLite</p>
     <p class="text-muted" style="margin-top:6px;font-size:12px">版本：V1.1.5</p>
   </footer>
-  <script src="js/md.js?v=20260714b"></script>
-  <script src="js/app.js?v=20260714k"></script>
+  <script src="js/md.js?v=20260716a"></script>
+  <script src="js/app.js?v=20260716a"></script>
   <script>
     // 网站加速器：注册 Service Worker（静态秒开 + 接口抗抖动）。失败静默，不影响主流程。
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('/sw.js?v=20260714m').catch(function () {});
+        navigator.serviceWorker.register('/sw.js?v=20260716a').catch(function () {});
       });
     }
   </script>

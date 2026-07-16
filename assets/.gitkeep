@@ -1,0 +1,2 @@
+# 此目录用于存放站点静态资源（如微信收款码 assets/wechat-qr.png）。
+# *.png 已在 .gitignore 中被忽略，不会进入 GitHub 仓库（保护你的收款码隐私）。

@@ -1,0 +1,5 @@
+# 万刊网 · GitHub Sponsor 配置
+# 仓库将显示「Sponsor」按钮，点击可跳转到以下方式。
+github: [Oseter]
+custom:
+  - "https://wankan.kesug.com/#/support"

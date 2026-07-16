@@ -1,6 +1,6 @@
 // 万刊网 网站加速器 · Service Worker
 // 作用：静态资源缓存优先（秒开、抗连接不稳定）；接口网络优先、失败回退（抗 Cloudflare 抖动）
-const CACHE = 'wankan-accel-v3';
+const CACHE = 'wankan-accel-20260716a';
 const ASSETS = ['/', '/index.html', '/css/style.css', '/js/app.js', '/js/md.js'];
 
 self.addEventListener('install', e => {

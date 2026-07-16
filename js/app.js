@@ -361,6 +361,7 @@ function renderNavbar() {
             <a href="#/create">创建刊物</a>
             <a href="#/rules">平台规则</a>
             <a href="#/about">关于</a>
+            <a href="javascript:void(0)" onclick="openSupport()">💖 赞助</a>
             ${currentUser ? `<a href="#/federation">蜂巢</a>` : ''}
             ${isPlatformAdmin() ? `<a href="#/admin">控制平台</a>` : ''}
             ${modOn('feedback') ? `<a href="javascript:void(0)" onclick="openFeedback()">反馈</a>` : ''}
@@ -386,6 +387,7 @@ function renderNavbar() {
             <a href="#/">首页</a>
             <a href="#/rules">平台规则</a>
             <a href="#/about">关于</a>
+            <a href="javascript:void(0)" onclick="openSupport()">💖 赞助</a>
             <a href="#/login">登录</a>
             <a href="#/register"><button class="btn btn-sm btn-primary">注册</button></a>
           </div>
@@ -393,6 +395,7 @@ function renderNavbar() {
       </div>`;
   }
   ensureChatLauncher();
+  try { if (localStorage.getItem('ad_dismissed') === '1') { const a = document.getElementById('top-ad'); if (a) a.style.display = 'none'; } } catch (e) {}
 }
 
 // 切换/登录/登出后调用：彻底重置聊天与未读状态，避免旧账号数据串到新账号
@@ -2689,6 +2692,40 @@ function openFeedback() {
     <button class="btn btn-primary" onclick="submitFeedback()">提交反馈</button>
   `);
 }
+
+function openSupport() {
+  openModal(`
+    <h3>💖 支持万刊网</h3>
+    <p class="text-muted">万刊网完全免费、不追踪用户。如果你觉得它有用，欢迎自愿支持——就像 B 站的「充电」一样～</p>
+    <div class="support-grid">
+      <div class="support-card">
+        <div class="sc-title">① 微信赞赏</div>
+        <div class="wx-qr-wrap">
+          <img class="wx-qr" src="assets/wechat-qr.png" alt="微信收款码"
+               onerror="this.style.display='none';document.getElementById('wx-fallback').style.display='block'">
+          <p id="wx-fallback" style="display:none" class="text-muted">运营者请将微信收款码保存为 <code>assets/wechat-qr.png</code> 并上传到站点根目录即可显示。</p>
+        </div>
+        <p class="sc-hint">打开微信 → 扫一扫即可赞赏</p>
+      </div>
+      <div class="support-card">
+        <div class="sc-title">② GitHub Sponsors</div>
+        <p class="sc-hint">如果你也用 GitHub，可以每月或一次性赞助，并点亮仓库的 ⭐ Sponsor。</p>
+        <a class="btn btn-primary" href="https://github.com/sponsors/Oseter" target="_blank" rel="noopener">前往 GitHub 赞助 ↗</a>
+      </div>
+      <div class="support-card">
+        <div class="sc-title">③ 广告 / 商务合作</div>
+        <p class="sc-hint">本站接受广告与商务合作，广告位招租中。顶部广告条亦可投放，欢迎联系。</p>
+      </div>
+    </div>
+  `);
+}
+
+function dismissAd() {
+  const a = document.getElementById('top-ad');
+  if (a) a.style.display = 'none';
+  try { localStorage.setItem('ad_dismissed', '1'); } catch (e) {}
+}
+
 async function submitFeedback() {
   const content = document.getElementById('fb-content').value.trim();
   const contact = document.getElementById('fb-contact').value.trim();

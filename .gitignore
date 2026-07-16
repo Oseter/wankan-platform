@@ -16,3 +16,13 @@ Thumbs.db
 .idea/
 .vscode/
 .workbuddy/
+
+# ===== Assets (user-provided, keep out of repo) =====
+assets/*.png
+assets/*.jpg
+assets/*.jpeg
+
+# ===== Local databases =====
+*.db
+*.sqlite
+*.sqlite3
