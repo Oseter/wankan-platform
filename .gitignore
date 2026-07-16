@@ -1,0 +1,18 @@
+# ===== Secrets / deploy (never commit) =====
+_ftp_deploy2.py
+.user.ini
+.htaccess
+deploy.env
+
+# ===== Local temp / caches =====
+__pycache__/
+*.pyc
+_brace_check.js
+_chk.js
+
+# ===== Editor / OS =====
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.workbuddy/

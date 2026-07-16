@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>万刊网 — 独立刊物发布平台</title>
+  <meta name="description" content="万刊网是一个独立的刊物发布平台，任何人都可以创建刊物，任何人都可以投稿，不依附于任何组织。">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+  <link rel="stylesheet" href="css/style.css?v=20260714m">
+</head>
+<body>
+  <div id="navbar"></div>
+  <div id="app"></div>
+  <footer class="footer">
+    <div class="footer-links">
+      <a href="#/">首页</a>
+      <a href="#/rules">平台规则</a>
+      <a href="#/about">关于</a>
+      <a href="https://oseter.github.io/wankan/">GitHub Pages 版</a>
+    </div>
+    <p>万刊网 — 独立刊物发布平台 | PHP + SQLite</p>
+    <p class="text-muted" style="margin-top:6px;font-size:12px">版本：V1.1.5</p>
+  </footer>
+  <script src="js/md.js?v=20260714b"></script>
+  <script src="js/app.js?v=20260714k"></script>
+  <script>
+    // 网站加速器：注册 Service Worker（静态秒开 + 接口抗抖动）。失败静默，不影响主流程。
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('/sw.js?v=20260714m').catch(function () {});
+      });
+    }
+  </script>
+</body>
+</html>
