@@ -2701,9 +2701,7 @@ function openSupport() {
       <div class="support-card">
         <div class="sc-title">① 微信赞赏</div>
         <div class="wx-qr-wrap">
-          <img class="wx-qr" src="assets/wechat-qr.png" alt="微信收款码"
-               onerror="this.style.display='none';document.getElementById('wx-fallback').style.display='block'">
-          <p id="wx-fallback" style="display:none" class="text-muted">运营者请将微信收款码保存为 <code>assets/wechat-qr.png</code> 并上传到站点根目录即可显示。</p>
+          <img id="wxQrImg" class="wx-qr" alt="微信收款码" src="assets/wxqr.png" onerror="this.onerror=null;this.style.display='none';var t=document.getElementById('wxQrHint');if(t)t.textContent='收款码加载失败，请刷新或稍后再试';">
         </div>
         <p class="sc-hint">打开微信 → 扫一扫即可赞赏</p>
       </div>
@@ -2718,6 +2716,15 @@ function openSupport() {
       </div>
     </div>
   `);
+  applyWxQr();
+}
+
+function applyWxQr() {
+  // 微信收款码直接以静态图 assets/wxqr.png 提供（新文件名，规避旧文件被 CDN 缓存 403 的问题）。
+  // 图片已在 openSupport 的 <img src> 中直接引用，这里仅在缺省时兜底设置一次。
+  const img = document.getElementById('wxQrImg');
+  if (!img) return;
+  if (!img.getAttribute('src')) img.src = 'assets/wxqr.png';
 }
 
 function dismissAd() {
