@@ -32,6 +32,10 @@ FILES = [
     "js/md.js",
 ]
 
+# 上传站点收款码（如果存在，git 仓库中忽略，仅走 FTP）
+if os.path.exists("assets/wechat-qr.png"):
+    FILES.append("assets/wechat-qr.png")
+
 SOCK_TIMEOUT = 120
 RETRY = 4
 
