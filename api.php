@@ -2888,7 +2888,7 @@ try {
                 $stats['posts'] = _cnt($db, 'SELECT COUNT(*) FROM pub_posts');
                 $recent_articles = $db->query("SELECT id, title, status, publication_id, created_at FROM articles ORDER BY id DESC LIMIT 5")->fetchAll();
                 $recent_pubs = $db->query("SELECT id, name, slug, created_at FROM publications ORDER BY id DESC LIMIT 5")->fetchAll();
-                $recent_feedback = $db->query("SELECT id, username, body, created_at FROM feedback ORDER BY id DESC LIMIT 5")->fetchAll();
+                $recent_feedback = $db->query("SELECT id, username, content AS body, created_at FROM feedback ORDER BY id DESC LIMIT 5")->fetchAll();
                 json_response(['stats' => $stats, 'recent_articles' => $recent_articles, 'recent_pubs' => $recent_pubs, 'recent_feedback' => $recent_feedback]);
             }
             break;
