@@ -168,10 +168,16 @@ async function api(action, options = {}) {
   const noRetry = options.noRetry || circuitOpen;
   const MAX = noRetry ? 1 : 2;            // 正常时 1 次重试，限流时 0 次重试
   const BACKOFF = [1500, 4000];
+  const TIMEOUT = 12000;                    // 单次请求上限 12s，避免后端卡死导致页面永久转圈
   let lastErr = null;
   for (let attempt = 0; attempt < MAX; attempt++) {
+    let ctrl = null, timer = null;
     try {
+      ctrl = new AbortController();
+      timer = setTimeout(() => { try { ctrl.abort(); } catch (e) {} }, TIMEOUT);
+      fetchOpts.signal = ctrl.signal;
       const res = await fetch(url, fetchOpts);
+      clearTimeout(timer);
       const text = await res.text();
       let data;
       try {
@@ -197,7 +203,8 @@ async function api(action, options = {}) {
       onNetworkSuccess();
       return data;
     } catch (err) {
-      // 仅“网络层失败”（fetch reject / TypeError: Failed to fetch）会到这里
+      // 仅“网络层失败”（fetch reject / TypeError: Failed to fetch / 超时 abort）会到这里
+      if (timer) clearTimeout(timer);
       lastErr = err;
       if (attempt < MAX - 1) { await new Promise(s => setTimeout(s, BACKOFF[attempt])); continue; }
       onNetworkFailure();
@@ -499,32 +506,7 @@ function addAccount() {
 
 // ============ 页面：首页 ============
 async function renderHome(main) {
-  main.innerHTML = '<div class="loading"><div class="spinner"></div><p class="mt-2">加载中...</p></div>';
-
-  const [pubData, stats] = await Promise.all([
-    api('publications'),
-    api('stats').catch(() => ({ publications: 0, articles: 0, published: 0, users: 0, issues: 0 }))
-  ]);
-
-  const pubs = pubData.publications || [];
-  let pubCards = pubs.length ? pubs.map(p => `
-    <div class="card">
-      <div class="card-title"><a href="#/pub/${p.slug}">${escapeHtml(p.name)}</a></div>
-      <div class="card-meta">
-        <span>主编: ${escapeHtml(p.owner_name)}</span>
-        <span>${p.article_count} 篇投稿</span>
-        <span>${p.published_count} 篇已发</span>
-        <span>${formatDate(p.created_at)} 创建</span>
-      </div>
-      ${p.description ? `<div class="card-desc">${escapeHtml(p.description)}</div>` : ''}
-      ${p.tags ? `<div class="mt-1">${p.tags.split(',').map(t => `<span class="tag">${escapeHtml(t.trim())}</span>`).join(' ')}</div>` : ''}
-    </div>`).join('') : `
-    <div class="empty" style="grid-column:1/-1">
-      <div class="icon">📝</div>
-      <p>还没有刊物，成为第一个创建者吧！</p>
-      <a href="#/create"><button class="btn btn-primary mt-2">创建刊物</button></a>
-    </div>`;
-
+  // 先渲染静态骨架（hero + 平台机制），立即“进去”，不卡在整页 spinner；数据异步补入
   main.innerHTML = `
     <div class="hero">
       <h1>万刊网</h1>
@@ -533,12 +515,12 @@ async function renderHome(main) {
         <a href="#/create"><button class="btn btn-primary btn-lg">创建刊物</button></a>
         <a href="#/rules"><button class="btn btn-lg">平台规则</button></a>
       </div>
-      <div class="hero-stats">
-        <div class="hero-stat"><div class="num">${stats.publications}</div><div class="label">刊物</div></div>
-        <div class="hero-stat"><div class="num">${stats.articles}</div><div class="label">投稿</div></div>
-        <div class="hero-stat"><div class="num">${stats.published}</div><div class="label">已发表</div></div>
-        <div class="hero-stat"><div class="num">${stats.users}</div><div class="label">用户</div></div>
-        <div class="hero-stat"><div class="num">${stats.issues}</div><div class="label">期刊</div></div>
+      <div class="hero-stats" id="hero-stats">
+        <div class="hero-stat"><div class="num" data-k="publications">·</div><div class="label">刊物</div></div>
+        <div class="hero-stat"><div class="num" data-k="articles">·</div><div class="label">投稿</div></div>
+        <div class="hero-stat"><div class="num" data-k="published">·</div><div class="label">已发表</div></div>
+        <div class="hero-stat"><div class="num" data-k="users">·</div><div class="label">用户</div></div>
+        <div class="hero-stat"><div class="num" data-k="issues">·</div><div class="label">期刊</div></div>
       </div>
     </div>
     <div class="container">
@@ -547,7 +529,9 @@ async function renderHome(main) {
           <h2>全部刊物</h2>
           <a href="#/create">+ 创建新刊物</a>
         </div>
-        <div class="grid grid-2">${pubCards}</div>
+        <div class="grid grid-2" id="pub-grid">
+          <div class="text-muted" id="pub-loading" style="grid-column:1/-1">刊物加载中…</div>
+        </div>
       </div>
       <div class="section">
         <div class="section-header"><h2>平台机制</h2></div>
@@ -571,6 +555,48 @@ async function renderHome(main) {
         </div>
       </div>
     </div>`;
+
+  // 统计：先到先填，失败静默（保持骨架）
+  api('stats').then(s => {
+    const box = document.getElementById('hero-stats');
+    if (!box || !s) return;
+    box.querySelectorAll('.hero-stat .num').forEach(el => {
+      const k = el.getAttribute('data-k');
+      if (k in s && s[k] != null) el.textContent = s[k];
+    });
+  }).catch(() => {});
+
+  // 刊物列表：异步拉取，成功注入卡片，失败给重试（不阻塞首屏）
+  api('publications').then(pubData => {
+    const grid = document.getElementById('pub-grid');
+    if (!grid) return;
+    const pubs = (pubData && pubData.publications) || [];
+    if (!pubs.length) {
+      grid.innerHTML = `
+        <div class="empty" style="grid-column:1/-1">
+          <div class="icon">📝</div>
+          <p>还没有刊物，成为第一个创建者吧！</p>
+          <a href="#/create"><button class="btn btn-primary mt-2">创建刊物</button></a>
+        </div>`;
+      return;
+    }
+    grid.innerHTML = pubs.map(p => `
+      <div class="card">
+        <div class="card-title"><a href="#/pub/${p.slug}">${escapeHtml(p.name)}</a></div>
+        <div class="card-meta">
+          <span>主编: ${escapeHtml(p.owner_name)}</span>
+          <span>${p.article_count} 篇投稿</span>
+          <span>${p.published_count} 篇已发</span>
+          <span>${formatDate(p.created_at)} 创建</span>
+        </div>
+        ${p.description ? `<div class="card-desc">${escapeHtml(p.description)}</div>` : ''}
+        ${p.tags ? `<div class="mt-1">${p.tags.split(',').map(t => `<span class="tag">${escapeHtml(t.trim())}</span>`).join(' ')}</div>` : ''}
+      </div>`).join('');
+  }).catch(err => {
+    const grid = document.getElementById('pub-grid');
+    if (!grid) return;
+    grid.innerHTML = `<div class="alert alert-error" style="grid-column:1/-1">${escapeHtml((err && err.message) || '加载失败')} <button class="btn btn-sm btn-primary mt-1" onclick="router()">点击重试</button></div>`;
+  });
 }
 
 // ============ 页面：登录 ============
