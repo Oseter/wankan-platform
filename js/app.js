@@ -528,7 +528,7 @@ async function renderHome(main) {
   main.innerHTML = `
     <div class="hero">
       <h1>万刊网</h1>
-      <p>独立的刊物发布平台 — 任何人都可以创建刊物，任何人都可以投稿，不依附于任何组织。</p>
+      <p>中心化、蜂窝式（类联邦）的刊物发布平台 — 任何人都可以创建刊物、向任意刊物投稿。</p>
       <div class="flex" style="justify-content:center;gap:12px">
         <a href="#/create"><button class="btn btn-primary btn-lg">创建刊物</button></a>
         <a href="#/rules"><button class="btn btn-lg">平台规则</button></a>
@@ -1549,18 +1549,17 @@ function showVerifyNotice(main, url) {
 // ============ 页面：平台规则 ============
 async function renderRules(main) {
   main.innerHTML = `
-    <div class="container" style="max-width:800px">
-      <h1 style="margin-bottom:24px">平台规则</h1>
+    <div class="container rules-page" style="max-width:820px">
+      <h1 class="page-title">平台规则</h1>
+      <p class="rules-lead">万刊网是一个<strong>中心化、蜂窝式（类联邦）</strong>的刊物发布平台：以统一中心平台为枢纽，由众多半自治的刊物「单元格」拼合而成，<strong>当前以单一服务器实例运行</strong>。任何人都可以创建刊物、向任意刊物投稿。使用本平台即表示你同意以下全部规则。</p>
 
       <div class="rules-section">
         <h2>📚 总则</h2>
-        <p>万刊网是一个独立的刊物发布平台，任何人都可以创建刊物，任何人都可以投稿，不依附于任何组织。</p>
-        <ol>
-          <li>万刊网不审查、不干预各刊物的编辑方针和审稿标准</li>
-          <li>各刊物独立运营，主编对刊物内容负全部责任</li>
+        <ul>
+          <li>万刊网不审查、不干预各刊物的编辑方针与审稿标准</li>
+          <li>各刊物在中心平台的统一框架下独立运营，主编对刊物内容负全部责任</li>
           <li>平台保留删除违法内容、封禁恶意用户的权利</li>
-          <li>使用本平台即表示同意以下全部规则</li>
-        </ol>
+        </ul>
       </div>
 
       <div class="rules-section">
@@ -1568,13 +1567,13 @@ async function renderRules(main) {
         <h3>谁可以投稿</h3>
         <ul>
           <li>任何注册用户都可以向任意开放投稿的刊物投稿</li>
-          <li>无需特殊资格或学术背景，以文章质量为唯一标准</li>
+          <li>无需特殊资格或学术背景，以文章质量作为唯一标准</li>
         </ul>
         <h3>投稿格式要求</h3>
         <ul>
-          <li><strong>标题</strong>：至少2个字符，简明扼要</li>
-          <li><strong>正文</strong>：至少10个字符，支持 Markdown 格式</li>
-          <li><strong>摘要</strong>：选填，建议200字以内概括文章内容</li>
+          <li><strong>标题</strong>：至少 2 个字符，简明扼要</li>
+          <li><strong>正文</strong>：至少 10 个字符，支持 Markdown 格式</li>
+          <li><strong>摘要</strong>：选填，建议 200 字以内概括文章内容</li>
           <li><strong>标签</strong>：选填，逗号分隔，便于分类检索</li>
           <li><strong>作者署名</strong>：默认为注册用户名，可修改为笔名</li>
           <li><strong>联系邮箱</strong>：选填，便于主编联系返修事宜</li>
@@ -1584,7 +1583,7 @@ async function renderRules(main) {
           <li>投稿内容须为原创或已获授权，不得侵犯他人著作权</li>
           <li>不得包含违法、色情、暴力、歧视等内容</li>
           <li>不得包含商业广告、垃圾信息或恶意链接</li>
-          <li>同一文章请勿一稿多投（同时投给多个刊物）</li>
+          <li>同一篇文章请勿一稿多投（同时投给多个刊物）</li>
         </ul>
       </div>
 
@@ -1593,12 +1592,13 @@ async function renderRules(main) {
         <h3>审稿流程</h3>
         <ol>
           <li><strong>待审</strong>：投稿提交后自动进入待审状态</li>
-          <li><strong>审阅</strong>：刊物主编审阅文章，可选择以下操作：</li>
-          <ul>
-            <li><span class="badge badge-accepted">录用</span>：文章质量达标，录用于该刊物</li>
-            <li><span class="badge badge-revise">返修</span>：文章有潜力但需修改，作者修改后可重新提交</li>
-            <li><span class="badge badge-rejected">拒稿</span>：文章不符合刊物要求，不予录用</li>
-          </ul>
+          <li><strong>审阅</strong>：刊物主编审阅文章，可选择以下操作：
+            <ul>
+              <li><span class="badge badge-accepted">录用</span>：文章质量达标，录用于该刊物</li>
+              <li><span class="badge badge-revise">返修</span>：文章有潜力但需修改，作者修改后可重新提交</li>
+              <li><span class="badge badge-rejected">拒稿</span>：文章不符合刊物要求，不予录用</li>
+            </ul>
+          </li>
           <li><strong>审稿意见</strong>：主编审稿时须提供审稿意见，供作者参考</li>
         </ol>
         <h3>审稿原则</h3>
@@ -1615,9 +1615,9 @@ async function renderRules(main) {
         <h3>发刊流程</h3>
         <ol>
           <li>主编在管理页面选择已录用的文章编入期刊</li>
-          <li>每期刊可包含多篇已录用文章，须至少选择1篇</li>
+          <li>每期刊可包含多篇已录用文章，须至少选择 1 篇</li>
           <li>发刊后文章状态变为「已发刊」，对全站公开可见</li>
-          <li>期刊编号自动递增（第1期、第2期...）</li>
+          <li>期刊编号自动递增（第 1 期、第 2 期……）</li>
         </ol>
         <h3>发刊注意事项</h3>
         <ul>
@@ -1632,7 +1632,7 @@ async function renderRules(main) {
         <ul>
           <li>注册用户可订阅感兴趣的刊物，订阅后可在个人主页查看更新</li>
           <li>每个刊物自动生成 RSS 订阅源，可通过 RSS 阅读器订阅</li>
-          <li>RSS 源包含最近50篇已发刊文章</li>
+          <li>RSS 源包含最近 50 篇已发刊文章</li>
           <li>订阅关系仅平台内部可见，不对外公开</li>
         </ul>
       </div>
@@ -1659,10 +1659,10 @@ async function renderRules(main) {
       </div>
 
       <div class="rules-section">
-        <h2>🔄 状态流转图</h2>
+        <h2>🔄 状态流转</h2>
         <pre><code>投稿 → 待审 ┬→ 录用 → 已发刊
-             ├→ 返修 → (重新提交) → 待审
-             └→ 拒稿</code></pre>
+         ├→ 返修 → (重新提交) → 待审
+         └→ 拒稿</code></pre>
       </div>
     </div>`;
 }
@@ -1670,52 +1670,58 @@ async function renderRules(main) {
 // ============ 页面：关于 ============
 async function renderAbout(main) {
   main.innerHTML = `
-    <div class="container" style="max-width:700px">
-      <h1 style="margin-bottom:24px">关于万刊网</h1>
+    <div class="container about-page" style="max-width:760px">
+      <h1 class="page-title">关于万刊网</h1>
+      <p class="about-lead">万刊网是一个<strong>中心化、蜂窝式（类联邦）</strong>的刊物发布平台：以统一的中心平台为枢纽（蜂窝的「巢」），由众多<strong>半自治的刊物「单元格」</strong>拼合而成。每个刊物保有独立的编辑主权与读者社群，又在中心平台的统一框架下汇聚成网。当前以<strong>单一服务器实例</strong>运行。</p>
 
       <div class="card mb-2">
         <h3>使命</h3>
-        <p class="text-muted mt-1">万刊网致力于打造一个去中心化的、独立的刊物发布平台，让每个人都能自由地创建刊物、发表文章，不受任何组织或机构的控制。</p>
+        <p class="text-muted mt-1">让每个人都能在统一的平台基座上创办自己的刊物「单元格」，以蜂窝式网络让好内容彼此连通、被更多人看见——既保留各刊物的独立编辑主权，又依托中心平台获得稳定、互通的支撑。</p>
       </div>
 
       <div class="card mb-2">
         <h3>技术架构</h3>
-        <p class="text-muted mt-1">万刊网基于 PHP + SQLite 构建，无需复杂的服务器配置，数据持久化存储，全站共享。</p>
-        <ul class="mt-1 text-muted">
-          <li><strong>后端</strong>：PHP + SQLite（轻量数据库，零配置）</li>
-          <li><strong>前端</strong>：纯 HTML/CSS/JavaScript（单页应用）</li>
-          <li><strong>认证</strong>：PHP Session + 密码哈希</li>
-          <li><strong>存储</strong>：SQLite 文件数据库（data.db）</li>
-          <li><strong>订阅</strong>：RSS 2.0 标准格式</li>
+        <p class="text-muted mt-1">万刊网在<strong>中心化基础设施</strong>之上，采用蜂窝式（类联邦）的组织架构：一个统一的技术基座承载众多半自治的刊物「单元格」。整套技术栈极简、零运维：</p>
+        <ul class="mt-1 text-muted about-arch">
+          <li><strong>形态</strong>：中心化蜂窝式（类联邦）——统一中心平台为枢纽，半自治刊物「单元格」在统一框架下互联互通；当前为<strong>单一服务器实例</strong></li>
+          <li><strong>架构蓝图</strong>：最初曾规划「<strong>一个中央服务器 + 多个节点服务器</strong>」的拓扑——中央为统一枢纽，各节点服务器作为半自治「单元格」承载各自刊物与社群。该多节点拓扑属<strong>原初设想 / 规划方向</strong>，当前尚未落地，现以单一服务器实例运行</li>
+          <li><strong>后端</strong>：PHP + SQLite，数据统一持久化在单文件数据库 <code>data.db</code> 中，全站共享，无需独立数据库服务</li>
+          <li><strong>接口</strong>：单一 <code>api.php</code> 动作路由，JSON 通信；用户密码以 bcrypt（<code>password_hash</code> / <code>PASSWORD_DEFAULT</code>）哈希存储</li>
+          <li><strong>认证</strong>：PHP Session 服务端会话管理，登录态保存在服务器</li>
+          <li><strong>前端</strong>：原生 HTML / CSS / JavaScript 单页应用（SPA），不依赖任何前端框架或构建工具</li>
+          <li><strong>内容渲染</strong>：文章正文以 <strong>Markdown 纯文本</strong>撰写与存储，由轻量自研渲染器 <code>js/md.js</code> 在浏览器端实时渲染，不被任何专有格式锁定</li>
+          <li><strong>加速与离线</strong>：内置 Service Worker（「网站加速器」）——静态资源缓存优先以实现秒开与弱网容错，接口网络优先并带失败回退</li>
+          <li><strong>订阅</strong>：每个刊物自动生成 <strong>RSS 2.0</strong> 订阅源（<code>application/rss+xml</code>，含最近 50 篇已发刊文章）</li>
+          <li><strong>发版</strong>：FTP 直传，版本号驱动 Service Worker 缓存刷新，发版即生效</li>
         </ul>
       </div>
 
       <div class="card mb-2">
         <h3>核心功能</h3>
         <ul class="mt-1 text-muted">
-          <li>用户注册与登录</li>
-          <li>创建刊物（任何人可创刊）</li>
+          <li>用户注册与登录（邮箱验证）</li>
+          <li>创建刊物（任何人可创刊，自动生成唯一 slug）</li>
           <li>投稿（Markdown 编辑器 + 实时预览）</li>
-          <li>审稿（录用/返修/拒稿 + 审稿意见）</li>
-          <li>发刊（将录用文章编入期刊）</li>
-          <li>评论（文章下方可评论讨论）</li>
+          <li>审稿（录用 / 返修 / 拒稿 + 公开审稿意见）</li>
+          <li>发刊（将录用文章编入期刊，自动编号）</li>
+          <li>评论（文章下方可讨论）</li>
           <li>订阅（订阅刊物 + RSS 订阅源）</li>
-          <li>用户主页（展示刊物和投稿历史）</li>
+          <li>用户主页（展示刊物与投稿历史）</li>
         </ul>
       </div>
 
       <div class="card mb-2">
         <h3>同步部署</h3>
-        <p class="text-muted mt-1">万刊网同时在以下平台运行：</p>
+        <p class="text-muted mt-1">万刊网以两种形态运行，数据相互独立：</p>
         <ul class="mt-1">
-          <li><a href="https://oseter.github.io/wankan/" target="_blank">GitHub Pages 版</a> — 纯静态 + GitHub Issues/Actions</li>
+          <li><a href="https://oseter.github.io/wankan/" target="_blank" rel="noopener">GitHub Pages 版</a> — 纯静态 + GitHub Issues / Actions</li>
           <li><a href="/">云服务器版</a> — PHP + SQLite（当前版本）</li>
         </ul>
       </div>
 
       <div class="card">
         <h3>联系我们</h3>
-        <p class="text-muted mt-1">万刊网是一个开放平台，欢迎提出建议和反馈。</p>
+        <p class="text-muted mt-1">万刊网是一个开放平台。欢迎通过站内「💖 赞助」中的方式联系站长，或随时提出建议与反馈。</p>
       </div>
     </div>`;
 }

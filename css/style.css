@@ -177,6 +177,10 @@ pre,code{white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere}
 .rules-section ol,.rules-section ul{padding-left:20px;margin:8px 0}
 .rules-section li{margin:6px 0;color:var(--text2);font-size:14px}
 .rules-section p{color:var(--text2);font-size:14px;margin:8px 0}
+.rules-page .page-title, .about-page .page-title{font-size:26px;margin-bottom:18px;line-height:1.3;font-weight:700}
+.rules-lead, .about-lead{color:var(--text2);font-size:15px;line-height:1.8;margin-bottom:22px}
+.about-arch{margin-top:10px}
+.about-arch li{margin:8px 0}
 
 /* Footer */
 .footer{border-top:1px solid var(--border);padding:24px 20px;text-align:center;color:var(--text3);font-size:13px;margin-top:48px}
@@ -281,6 +285,10 @@ img.avatar-lg{object-fit:cover}
   .stat-row{grid-template-columns:repeat(2,1fr)}
   .profile-id{padding-top:8px}
   .profile-actions{padding-top:8px;width:100%}
+  .rules-section{padding:16px;margin-bottom:16px}
+  .about-page .card{padding:16px}
+  .rules-page .page-title, .about-page .page-title{font-size:22px}
+  .rules-section ol, .rules-section ul{padding-left:18px}
 }
 
 /* ===== 账号切换器 ===== */
