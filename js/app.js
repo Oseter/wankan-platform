@@ -2104,7 +2104,6 @@ async function renderAdmin(main) {
     </div>`;
   loadAdminLog();
   loadAccel();
-  loadCommunityJoin(slug);
 }
 
 // ============ 社区加入管理（刊物管理面板） ============
