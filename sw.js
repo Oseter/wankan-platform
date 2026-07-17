@@ -1,8 +1,8 @@
 // 万刊网 网站加速器 · Service Worker
 // 作用：静态资源缓存优先（秒开、抗连接不稳定）；接口/首页网络优先、失败回退。
 // 关键防坑：绝不缓存、绝不吐出 InfinityFree 的反爬验证页（slowAES / __test），否则会把验证页当首页死循环。
-const CACHE = 'wankan-accel-20260717g';
-const ASSETS = ['/index.html', '/css/style.css', '/js/app.js', '/js/md.js'];
+const CACHE = 'wankan-accel-20260717h';
+const ASSETS = ['/css/style.css', '/js/app.js', '/js/md.js'];
 
 // 判断响应是否"坏"（反爬验证页 / 错误页 / 非预期类型）：坏的一律不缓存、不使用
 function isBadResponse(resp, path) {
@@ -13,14 +13,19 @@ function isBadResponse(resp, path) {
   return false;
 }
 
-// 异步判断"是否真首页"（不是验证页），是才写缓存；读克隆，不阻塞返回
-function cacheIfRealHtml(resp) {
+// 判断"是不是真 HTML 页面"（非验证页）：读克隆、排除 slowAES/__test、长度足够
+function looksLikeRealPage(txt, resp) {
+  return !!resp && resp.ok && txt.length > 2000 &&
+         txt.indexOf('slowAES') === -1 && txt.indexOf('__test=') === -1;
+}
+
+// 把"确认真页面"的响应（按请求 URL 为键）写入缓存；不阻塞返回
+function cacheRealHtml(resp, req) {
   try {
     const cp = resp.clone();
     cp.text().then(txt => {
-      if (resp.ok && txt.length > 2000 &&
-          txt.indexOf('slowAES') === -1 && txt.indexOf('__test=') === -1) {
-        caches.open(CACHE).then(c => c.put('/index.html', new Response(txt, {
+      if (looksLikeRealPage(txt, resp)) {
+        caches.open(CACHE).then(c => c.put(req, new Response(txt, {
           headers: { 'content-type': resp.headers.get('content-type') || 'text/html' }
         })));
       }
@@ -59,12 +64,13 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // 导航 / HTML：网络优先，原样返回（验证页也放行，让浏览器自己跑挑战）；只缓存真首页；离线回退缓存
+  // 导航 / HTML：网络优先，原样返回（验证页也放行，让浏览器自己跑挑战）；
+  // 只把"确认真页面"按 URL 缓存；失败回退到同 URL 的缓存（绝不回退挑战页）
   const acceptHtml = (req.headers.get('accept') || '').indexOf('text/html') !== -1;
   if (req.mode === 'navigate' || acceptHtml) {
     e.respondWith(
-      fetch(req).then(resp => { cacheIfRealHtml(resp); return resp; })
-                .catch(() => caches.match('/index.html'))
+      fetch(req).then(resp => { cacheRealHtml(resp, req); return resp; })
+                .catch(() => caches.match(req))
     );
     return;
   }
