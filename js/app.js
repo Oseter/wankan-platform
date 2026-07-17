@@ -323,8 +323,11 @@ async function init() {
       authToken = null; saveAccounts();
     }
   } catch {
-    currentUser = null;
-    authToken = null; saveAccounts();
+    // 网络抖动 / 限流 / 偶发 anti-bot 挑战导致 me 失败时，绝不抹掉已恢复的有效 token，
+    // 否则用户一次失败就被清空登录态（控制平台等入口消失）。
+    // 用 localStorage 里存的 user 做乐观兜底，后端接口仍强制校验权限。
+    const acc = accounts.find(a => a.token === authToken);
+    if (acc && acc.user) currentUser = acc.user;
   }
   if (currentUser) {
     try { const u = await api('inbox_unread'); unreadCount = (u.total || 0); } catch (e) { unreadCount = 0; }
