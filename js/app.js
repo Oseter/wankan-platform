@@ -129,7 +129,7 @@ function openCircuit() {
   showCircuitBanner();
   // 启动缓慢探活：被限流时只发极少量请求，让封禁冷却
   if (circuitTimer) clearTimeout(circuitTimer);
-  circuitTimer = setTimeout(probeServer, circuitBackoff);
+  circuitTimer = setTimeout(probeServer, 8000);   // 首次探活 8s 后即试，别让用户干等 60s
 }
 function closeCircuit() {
   if (!circuitOpen) return;
@@ -165,8 +165,8 @@ async function api(action, options = {}) {
 
   // 熔断打开时：用户手动操作（登录/发帖）仍尝试一次，但不再内部重试（避免雪崩）；
   // 探活由 probeServer 单独负责，轮询函数见到 circuitOpen 会直接 return。
-  const noRetry = options.noRetry || circuitOpen;
-  const MAX = noRetry ? 1 : 2;            // 正常时 1 次重试，限流时 0 次重试
+  const noRetry = !!options.noRetry;        // 仅显式 noRetry（探活）才不重试；熔断态不再禁止重试，避免锁死
+  const MAX = noRetry ? 1 : 2;           // 正常与熔断态都允许 1 次重试
   const BACKOFF = [1500, 4000];
   const TIMEOUT = 12000;                    // 单次请求上限 12s，避免后端卡死导致页面永久转圈
   let lastErr = null;
@@ -218,7 +218,7 @@ async function api(action, options = {}) {
 // 连续网络层失败计数 → 达阈值打开熔断；成功则清零
 function onNetworkFailure() {
   netFailures++;
-  if (!circuitOpen && netFailures >= 3) openCircuit();
+  if (!circuitOpen && netFailures >= 8) openCircuit();   // 免费档偶发限流常见，放宽阈值，避免偶发就熔断锁死
 }
 function onNetworkSuccess() {
   netFailures = 0;
@@ -595,7 +595,12 @@ async function renderHome(main) {
   }).catch(err => {
     const grid = document.getElementById('pub-grid');
     if (!grid) return;
-    grid.innerHTML = `<div class="alert alert-error" style="grid-column:1/-1">${escapeHtml((err && err.message) || '加载失败')} <button class="btn btn-sm btn-primary mt-1" onclick="router()">点击重试</button></div>`;
+    // 首屏失败绝不用刺眼"网络繁忙"霸屏——降级为低调空态，保留 hero+机制，用户始终"进得去"
+    grid.innerHTML = `<div class="empty" style="grid-column:1/-1">
+      <div class="icon">📡</div>
+      <p>刊物列表暂时没加载出来</p>
+      <button class="btn btn-sm btn-primary mt-1" onclick="router()">点击重试</button>
+    </div>`;
   });
 }
 
