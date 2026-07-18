@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>万刊网 · 一键修复</title>
+  <style>
+    body { font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+           background:#0f1115; color:#e6e6e6; margin:0; padding:40px 16px;
+           display:flex; flex-direction:column; align-items:center; min-height:100vh; box-sizing:border-box; }
+    .card { background:#1a1d24; border:1px solid #2a2f3a; border-radius:12px;
+            padding:28px 32px; max-width:520px; width:100%; }
+    h1 { font-size:20px; margin:0 0 6px; }
+    .sub { color:#9aa3b2; font-size:13px; margin-bottom:18px; }
+    #log { font-family: ui-monospace, Menlo, Consolas, monospace; font-size:13px;
+           background:#0b0d11; border-radius:8px; padding:14px 16px; min-height:120px;
+           white-space:pre-wrap; line-height:1.7; color:#b8e0c0; }
+    #log .err { color:#ff9a9a; }
+    #log .ok  { color:#8fe6a0; }
+    a { color:#6cb6ff; }
+    .btn { display:inline-block; margin-top:16px; padding:10px 18px; background:#2d6cff;
+           color:#fff; border-radius:8px; text-decoration:none; font-size:14px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🔧 万刊网 · 一键修复</h1>
+    <div class="sub">此页会：注销旧 Service Worker、清空浏览器缓存、清掉登录态残留，然后跳回干净首页。
+      这会清除你本地保存的多账号（需重新登录），但能根治"页面卡旧版 / 进不去 / 显示异常"。</div>
+    <div id="log">准备中…</div>
+    <a class="btn" id="go" href="/" style="display:none">前往首页 →</a>
+  </div>
+
+  <script>
+  (async function () {
+    const log = document.getElementById('log');
+    const print = (msg, cls) => {
+      const line = document.createElement('div');
+      if (cls) line.className = cls;
+      line.textContent = '• ' + msg;
+      log.appendChild(line);
+      log.scrollTop = log.scrollHeight;
+    };
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+    try {
+      // 1) 注销所有 Service Worker
+      if ('serviceWorker' in navigator) {
+        try {
+          const regs = await navigator.serviceWorker.getRegistrations();
+          if (regs.length) {
+            for (const r of regs) { try { await r.unregister(); } catch (e) {} }
+            print('已注销 ' + regs.length + ' 个 Service Worker', 'ok');
+          } else {
+            print('无 Service Worker 需要注销', 'ok');
+          }
+        } catch (e) { print('注销 Service Worker 失败：' + e.message, 'err'); }
+      } else {
+        print('当前浏览器不支持 Service Worker', 'ok');
+      }
+
+      // 2) 清空所有 Cache Storage
+      if ('caches' in window) {
+        try {
+          const keys = await caches.keys();
+          if (keys.length) {
+            for (const k of keys) { try { await caches.delete(k); } catch (e) {} }
+            print('已清空 ' + keys.length + ' 个缓存', 'ok');
+          } else {
+            print('无缓存需要清空', 'ok');
+          }
+        } catch (e) { print('清空缓存失败：' + e.message, 'err'); }
+      } else {
+        print('当前浏览器不支持 Cache Storage', 'ok');
+      }
+
+      // 3) 清掉登录态残留（多账号 / 当前 token）
+      try {
+        localStorage.removeItem('wk_accounts');
+        localStorage.removeItem('wk_active_token');
+        print('已清除本地登录态残留', 'ok');
+      } catch (e) { print('清除登录态失败：' + e.message, 'err'); }
+
+      await sleep(500);
+      print('修复完成，正在跳回首页…', 'ok');
+      const btn = document.getElementById('go');
+      btn.style.display = 'inline-block';
+
+      // 4) 带时间戳强刷首页，绕过任何残留 HTTP 缓存
+      setTimeout(() => { window.location.replace('/?reset=' + Date.now()); }, 700);
+    } catch (e) {
+      print('修复过程出错：' + (e && e.message), 'err');
+      document.getElementById('go').style.display = 'inline-block';
+    }
+  })();
+  </script>
+</body>
+</html>
